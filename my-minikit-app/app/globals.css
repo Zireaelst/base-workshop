@@ -3,13 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #111111;
+  --background: #0f0f0f;
+  --foreground: #ffffff;
+  --base-dark: #0f0f0f;
+  --base-gray: #1a1a1a;
+  --base-light-gray: #2a2a2a;
+  --base-purple: #6366f1;
+  --base-purple-light: #a5b4fc;
+  --base-green: #10b981;
+  --base-red: #ef4444;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #111111;
+    --background: #0f0f0f;
     --foreground: #ffffff;
   }
 }
@@ -22,4 +29,32 @@ body {
   font-weight: 400;
   font-style: normal;
   font-size: 80%;
+}
+
+/* Custom Tombala colors */
+.bg-base-dark { background-color: var(--base-dark); }
+.bg-base-gray { background-color: var(--base-gray); }
+.bg-base-light-gray { background-color: var(--base-light-gray); }
+.bg-base-purple { background-color: var(--base-purple); }
+.bg-base-purple-light { background-color: var(--base-purple-light); }
+.bg-base-green { background-color: var(--base-green); }
+.bg-base-red { background-color: var(--base-red); }
+
+.text-base-purple { color: var(--base-purple); }
+.text-base-purple-light { color: var(--base-purple-light); }
+
+.ring-base-purple { --tw-ring-color: var(--base-purple); }
+.ring-base-purple-light { --tw-ring-color: var(--base-purple-light); }
+.ring-offset-base-gray { --tw-ring-offset-color: var(--base-gray); }
+
+.hover\:bg-base-purple-light:hover { background-color: var(--base-purple-light); }
+
+/* Animation for prize pool */
+@keyframes pulseScale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.animate-pulseScale {
+  animation: pulseScale 2s ease-in-out infinite;
 }

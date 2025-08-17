@@ -1,0 +1,5 @@
+{
+  "name": "Base Tombala",
+  "description": "A fun and interactive Tombala (Bingo) game built for Farcaster. Place your bet on a number in the grid and win the entire prize pool if your number is drawn!",
+  "requestFramePermissions": []
+}

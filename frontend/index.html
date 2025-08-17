@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Base Tombala</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'base-purple': '#6366F1',
+              'base-purple-light': '#818CF8',
+              'base-dark': '#111827',
+              'base-gray': '#374151',
+              'base-light-gray': '#4B5563',
+              'base-green': '#10B981',
+              'base-red': '#EF4444',
+            },
+            keyframes: {
+              pulseScale: {
+                '0%, 100%': { transform: 'scale(1)' },
+                '50%': { transform: 'scale(1.05)' },
+              },
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+               confettiFall: {
+                '0%': { transform: 'translateY(-100%) rotate(0deg)', opacity: 1 },
+                '100%': { transform: 'translateY(100vh) rotate(720deg)', opacity: 0 },
+              },
+            },
+            animation: {
+              pulseScale: 'pulseScale 2s ease-in-out infinite',
+              fadeIn: 'fadeIn 0.5s ease-out forwards',
+              confettiFall: 'confettiFall 3s linear infinite',
+            },
+          },
+        },
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.1.1/",
+    "react": "https://esm.sh/react@^19.1.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.1/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-base-dark text-white">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
