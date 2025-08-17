@@ -105,7 +105,7 @@ export default function App() {
 
   const handleSelectNumber = (num: number) => {
     if (gameState.numbers.find(n => n.num === num && n.owner)) {
-      showToast('Bu sayı dolu', 'error');
+      showToast('This number is taken', 'error');
       return;
     }
     setSelectedNumber(num === selectedNumber ? null : num);
@@ -116,12 +116,12 @@ export default function App() {
     
     try {
       await placeBet(selectedNumber);
-      showToast('Bahsiniz başarıyla alındı!', 'success');
+      showToast('Bet placed successfully!', 'success');
       setSelectedNumber(null);
       // Refetch stats to update UI
       setTimeout(() => refetchStats(), 2000);
     } catch (error: unknown) {
-      showToast((error as Error)?.message || 'İşlem başarısız oldu.', 'error');
+      showToast((error as Error)?.message || 'Transaction failed.', 'error');
     }
   };
 

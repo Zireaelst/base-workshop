@@ -1,52 +1,80 @@
-# MiniKit Template
+# Base Tombala - Decentralized Turkish Bingo on Base Blockchain
 
-# 🎯 Tombala Mini App
+A decentralized Turkish-style bingo game built on Base blockchain with Coinbase MiniKit integration. Players can place bets on numbers 1-25, and the smart contract automatically handles draws and prize distribution.
 
-Blockchain tabanlı **Türk Tombala oyunu** - Base ağında çalışan güvenli ve adil mini uygulama.
+## 🚀 Features
 
-## 🎮 Oyun Hakkında
+- **Decentralized Gaming**: Smart contract-based game logic on Base blockchain
+- **Fair & Transparent**: All draws are verifiable on-chain
+- **Real-time Updates**: Live game state updates via Web3 hooks
+- **Mobile-First Design**: Responsive UI optimized for MiniKit
+- **Turkish Bingo Rules**: Classic tombala gameplay with 25-number grid
+- **Automated Draws**: Scheduled draws every 5 minutes
+- **Prize Pool System**: Accumulating ETH rewards for winners
 
-Tombala, geleneksel Türk tombala oyununun blockchain versiyonudur. Oyuncular 1-25 arasından bir sayı seçer, 0.001 ETH bahis yapar ve 24 saat sonra yapılan çekilişte kazananı bekler.
-
-### 🎯 Özellikler
-
-- ⚡ **Anında Oyun**: MiniKit entegrasyonu ile hızlı cüzdan bağlantısı
-- 🔒 **%100 Güvenli**: Akıllı kontrat ile şeffaf ve manipüle edilemez oyun
-- 💰 **Adil Ödül Dağıtımı**: Kazanan kasanın %90'ını alır
-- 🕐 **24 Saatlik Döngü**: Her gün yeni oyun, otomatik çekiliş
-- 📱 **Mobil Uyumlu**: Base app içinde mükemmel çalışır
-
-### 🎲 Oyun Kuralları
-
-1. **Sayı Seçimi**: 1-25 arasından tek bir sayı seçin
-2. **Bahis**: Sabit 0.001 ETH ödeme yapın
-3. **Bekleme**: 24 saat sonra otomatik çekiliş
-4. **Kazanma**: Seçilen sayılardan birisi rastgele kazanan olur
-
-## 🚀 Teknoloji Stack
+## 🛠 Tech Stack
 
 - **Frontend**: Next.js 15, TypeScript, Tailwind CSS
-- **Blockchain**: Base (Sepolia test / Mainnet production)
-- **Akıllı Kontrat**: Solidity 0.8.27
-- **Web3 Kütüphaneleri**: OnChainKit, Wagmi, Viem
-- **Test Framework**: Hardhat
-- **Deployment**: Vercel
-- **Otomasyon**: Vercel Cron Jobs
+- **Blockchain**: Solidity 0.8.27, Hardhat, Base Sepolia/Mainnet
+- **Web3 Integration**: Wagmi, Viem, OnChainKit
+- **MiniKit**: Coinbase MiniKit for seamless wallet connection
+- **Development**: ESLint, TypeScript strict mode
+- **Deployment**: Vercel with automated cron jobs
 
-## 🛠️ Kurulum
+## 🎮 How to Play
 
-### Önkoşullar
+1. **Connect Wallet**: Use your Coinbase Wallet or any compatible wallet
+2. **Choose Number**: Select any available number from 1-25 grid
+3. **Place Bet**: Pay 0.001 ETH to secure your number
+4. **Wait for Draw**: Automated draws happen every 5 minutes
+5. **Win Prize**: If your number is drawn, win the entire prize pool!
+## 📱 Game States
 
-- Node.js 18+
-- npm veya yarn
-- Base Sepolia testnet ETH'i
-- OnChainKit API anahtarı
+- **Active**: Players can place bets on available numbers
+- **Drawing**: Countdown to automatic number selection
+- **Results**: Display winning number and prize distribution
+- **Loading**: Initializing new round
 
-### Adımlar
+## 🏗 Smart Contract
 
-1. **Repo'yu klonlayın**
+The `Tombala.sol` contract handles:
+
+- **Bet Management**: Track player bets and chosen numbers
+- **Prize Pool**: Accumulate ETH from all bets
+- **Random Draws**: Secure random number generation
+- **Prize Distribution**: Automatic winner payouts
+- **Game Lifecycle**: Start new rounds after each draw
+
+### Contract Address (Base Sepolia)
+```
+0xD8D362c4A33C6d180B65d9020C602DFeF48cA37b
+```
+
+## � Quick Start
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- Git
+- Coinbase Wallet or compatible Web3 wallet
+
+### Installation
+
 ```bash
-git clone <your-repo-url>
+# Clone the repository
+git clone https://github.com/your-username/base-tombala.git
+cd base-tombala
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Add your contract addresses and API keys
+
+# Start development server
+npm run dev
+```
 cd my-minikit-app
 ```
 

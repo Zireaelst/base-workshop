@@ -38,7 +38,7 @@ const PrizePool: React.FC<PrizePoolProps> = ({ amount }) => {
   return (
     <div className="w-full bg-base-gray p-6 rounded-xl shadow-lg text-center animate-pulseScale">
       <p className="text-base-purple-light text-sm uppercase font-semibold tracking-wider">
-        Havuzdaki Toplam Ödül
+        Total Prize Pool
       </p>
       <p className={`text-4xl font-bold text-white mt-2 transition-transform duration-300 ${isAnimating ? 'scale-110' : 'scale-100'}`}>
         {displayAmount.toFixed(4)} ETH

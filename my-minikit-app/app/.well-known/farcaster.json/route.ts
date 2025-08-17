@@ -12,7 +12,7 @@ function withValidProperties(
 }
 
 export async function GET() {
-  const URL = process.env.NEXT_PUBLIC_URL;
+  const URL = "https://base-workshop-dluichko1-zireaelsts-projects.vercel.app";
 
   return Response.json({
     accountAssociation: {
@@ -22,22 +22,22 @@ export async function GET() {
     },
     frame: withValidProperties({
       version: "1",
-      name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
-      subtitle: process.env.NEXT_PUBLIC_APP_SUBTITLE,
-      description: process.env.NEXT_PUBLIC_APP_DESCRIPTION,
+      name: "Base Tombala",
+      subtitle: "Decentralized Turkish Bingo",
+      description: "Win ETH by betting on numbers 1-25 in this decentralized Turkish Bingo game on Base blockchain!",
       screenshotUrls: [],
-      iconUrl: process.env.NEXT_PUBLIC_APP_ICON,
-      splashImageUrl: process.env.NEXT_PUBLIC_APP_SPLASH_IMAGE,
-      splashBackgroundColor: process.env.NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR,
+      iconUrl: `${URL}/icon.png`,
+      splashImageUrl: `${URL}/splash.png`,
+      splashBackgroundColor: "#0f0f0f",
       homeUrl: URL,
       webhookUrl: `${URL}/api/webhook`,
-      primaryCategory: process.env.NEXT_PUBLIC_APP_PRIMARY_CATEGORY,
-      tags: [],
-      heroImageUrl: process.env.NEXT_PUBLIC_APP_HERO_IMAGE,
-      tagline: process.env.NEXT_PUBLIC_APP_TAGLINE,
-      ogTitle: process.env.NEXT_PUBLIC_APP_OG_TITLE,
-      ogDescription: process.env.NEXT_PUBLIC_APP_OG_DESCRIPTION,
-      ogImageUrl: process.env.NEXT_PUBLIC_APP_OG_IMAGE,
+      primaryCategory: "games",
+      tags: ["tombala", "bingo", "web3", "base"],
+      heroImageUrl: `${URL}/hero.png`,
+      tagline: "Decentralized Turkish Bingo on Base",
+      ogTitle: "Base Tombala - Decentralized Turkish Bingo",
+      ogDescription: "Win ETH by betting on numbers 1-25 in this decentralized Turkish Bingo game on Base blockchain!",
+      ogImageUrl: `${URL}/hero.png`,
     }),
   });
 }
