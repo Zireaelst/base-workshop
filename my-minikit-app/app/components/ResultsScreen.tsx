@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Confetti from './Confetti';
-import { GameResult } from '../types';
+import { GameResult } from '@/lib/types';
 
 interface ResultsScreenProps {
   result: GameResult | null;
