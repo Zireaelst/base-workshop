@@ -155,18 +155,18 @@ export function TombalaGame({ onBack }: TombalaGameProps) {
             <div>
               <span className="text-gray-500">Status:</span>
               <span className={`font-bold ml-2 ${gameStats?.[1] ? 'text-green-600' : 'text-red-600'}`}>
-                {gameStats?.[1] ? 'Active' : 'Ended'}
+                {gameStatsLoading ? '...' : (gameStats?.[1] ? 'Active' : 'Ended')}
               </span>
             </div>
             <div>
               <span className="text-gray-500">Prize Pool:</span>
               <span className="font-bold ml-2">
-                {gameStats?.[2] ? `${formatEther(gameStats[2])} ETH` : '0 ETH'}
+                {gameStats?.[2] ? `${formatEther(gameStats[2])} ETH` : '...'}
               </span>
             </div>
             <div>
               <span className="text-gray-500">Bets:</span>
-              <span className="font-bold ml-2">{gameStats?.[3]?.toString() || '0'}</span>
+              <span className="font-bold ml-2">{gameStats?.[3]?.toString() || '...'}</span>
             </div>
           </div>
           
@@ -246,7 +246,7 @@ export function TombalaGame({ onBack }: TombalaGameProps) {
         {(gameStatsLoading || filledNumbersLoading) && (
           <div className="text-center py-4">
             <div className="inline-block w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-sm text-gray-500 mt-2">Loading game status...</p>
+            <p className="text-sm text-gray-500 mt-2">Loading game data...</p>
           </div>
         )}
       </div>

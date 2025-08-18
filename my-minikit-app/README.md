@@ -9,7 +9,7 @@ A decentralized Turkish-style bingo game built on Base blockchain with Coinbase 
 - **Real-time Updates**: Live game state updates via Web3 hooks
 - **Mobile-First Design**: Responsive UI optimized for MiniKit
 - **Turkish Bingo Rules**: Classic tombala gameplay with 25-number grid
-- **Automated Draws**: Scheduled draws every 5 minutes
+- **Automated Draws**: Scheduled draws every 24 hours
 - **Prize Pool System**: Accumulating ETH rewards for winners
 
 ## 🛠 Tech Stack
@@ -26,8 +26,9 @@ A decentralized Turkish-style bingo game built on Base blockchain with Coinbase 
 1. **Connect Wallet**: Use your Coinbase Wallet or any compatible wallet
 2. **Choose Number**: Select any available number from 1-25 grid
 3. **Place Bet**: Pay 0.001 ETH to secure your number
-4. **Wait for Draw**: Automated draws happen every 5 minutes
+4. **Wait for Draw**: Automated draws happen every 24 hours
 5. **Win Prize**: If your number is drawn, win the entire prize pool!
+
 ## 📱 Game States
 
 - **Active**: Players can place bets on available numbers
@@ -47,7 +48,41 @@ The `Tombala.sol` contract handles:
 
 ### Contract Address (Base Sepolia)
 ```
-0xD8D362c4A33C6d180B65d9020C602DFeF48cA37b
+0xbf60e7f890329cdA4FE04F01cBF4686B4fEe8f73
+```
+
+## 🚀 Quick Start
+
+### 1. Clone and Install
+```bash
+git clone https://github.com/your-username/base-tombala
+cd base-tombala
+npm install
+```
+
+### 2. Environment Setup
+```bash
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env file with your values:
+# - PRIVATE_KEY: Your wallet private key for deployment
+# - NEXT_PUBLIC_ONCHAINKIT_API_KEY: Your OnChainKit API key
+# - Contract addresses after deployment
+```
+
+### 3. Deploy Contract
+```bash
+# Deploy to Base Sepolia
+npx hardhat run scripts/deploy.js --network base-sepolia
+
+# Update .env with the deployed contract address
+```
+
+### 4. Run Development Server
+```bash
+npm run dev
+# Open http://localhost:3000
 ```
 
 ## � Quick Start

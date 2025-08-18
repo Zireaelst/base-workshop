@@ -25,21 +25,22 @@ import { GameState, GameStatus, NumberCellData, GameResult } from '@/lib/types';
 import GameScreen from './components/GameScreen';
 import ResultsScreen from './components/ResultsScreen';
 import Toast from './components/Toast';
-import { useTombalaGameStats, useTombalaPlaceBet } from '@/lib/tombala-hooks';
+import { useTombalaGameStats, useTombalaPlaceBet, useTombalaFilledNumbers } from '@/lib/tombala-hooks';
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
   const [frameAdded, setFrameAdded] = useState(false);
   
   // Game state management
-  const { data: gameStats, refetch: refetchStats } = useTombalaGameStats();
+  const { data: gameStats } = useTombalaGameStats();
+  const { data: filledNumbers } = useTombalaFilledNumbers();
   const { placeBet, isPending: isBetting } = useTombalaPlaceBet();
   
   const [gameState, setGameState] = useState<GameState>({
     status: GameStatus.LOADING,
     prizePool: 0,
     numbers: [],
-    drawTime: new Date(Date.now() + 300000), // 5 minutes from now
+    drawTime: new Date(Date.now() + 86400000), // 24 hours from now (default)
     betAmount: 0.001,
   });
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
@@ -62,24 +63,55 @@ export default function App() {
 
   // Update game state when blockchain data changes
   useEffect(() => {
-    if (gameStats) {
+    if (gameStats && filledNumbers !== undefined) {
+      // gameStats = [gameId, isActive, pot, betsCount, timeLeft]
+      const [, isActive, pot, , timeLeft] = gameStats;
+      
+      // Create numbers array (1-25) with owners from smart contract
+      const numbers: NumberCellData[] = [];
+      const filledNumbersArray = filledNumbers as bigint[];
+      
+      for (let i = 1; i <= 25; i++) {
+        const isNumberTaken = filledNumbersArray.some(num => Number(num) === i);
+        numbers.push({
+          num: i,
+          owner: isNumberTaken ? `Player` : undefined, // We don't have owner names, just mark as taken
+        });
+      }
+
+      // Calculate draw time based on remaining time
+      const drawTime = new Date(Date.now() + Number(timeLeft) * 1000);
+
+      setGameState({
+        status: isActive ? GameStatus.ACTIVE : GameStatus.LOADING,
+        prizePool: Number(pot) / 1e18, // Convert from wei to ETH
+        numbers,
+        drawTime,
+        betAmount: 0.001,
+      });
+    } else if (gameStats) {
+      // Fallback when filledNumbers is not available yet
+      const [, isActive, pot, , timeLeft] = gameStats;
+      
       const numbers: NumberCellData[] = [];
       for (let i = 1; i <= 25; i++) {
         numbers.push({
           num: i,
-          owner: gameStats[2] && gameStats[2] > 0 ? `Player${i}` : undefined, // Mock data based on prize pool
+          owner: undefined,
         });
       }
 
+      const drawTime = new Date(Date.now() + Number(timeLeft) * 1000);
+
       setGameState({
-        status: gameStats[1] ? GameStatus.ACTIVE : GameStatus.LOADING, // isActive
-        prizePool: Number(gameStats[0]) / 1e18, // prizePool from wei
+        status: isActive ? GameStatus.ACTIVE : GameStatus.LOADING,
+        prizePool: Number(pot) / 1e18,
         numbers,
-        drawTime: new Date(Number(gameStats[3]) * 1000), // drawTime from unix timestamp
+        drawTime,
         betAmount: 0.001,
       });
     } else {
-      // Set default mock state when no blockchain data
+      // Set default state when no blockchain data (for development/testing)
       const numbers: NumberCellData[] = [];
       for (let i = 1; i <= 25; i++) {
         numbers.push({
@@ -92,11 +124,11 @@ export default function App() {
         status: GameStatus.ACTIVE,
         prizePool: 0.025,
         numbers,
-        drawTime: new Date(Date.now() + 300000), // 5 minutes from now
+        drawTime: new Date(Date.now() + 86400000), // 24 hours from now
         betAmount: 0.001,
       });
     }
-  }, [gameStats]);
+  }, [gameStats, filledNumbers]);
 
   const handleAddFrame = useCallback(async () => {
     const frameAdded = await addFrame();
@@ -118,33 +150,36 @@ export default function App() {
       await placeBet(selectedNumber);
       showToast('Bet placed successfully!', 'success');
       setSelectedNumber(null);
-      // Refetch stats to update UI
-      setTimeout(() => refetchStats(), 2000);
+      // The hooks will automatically refetch with their polling intervals
     } catch (error: unknown) {
       showToast((error as Error)?.message || 'Transaction failed.', 'error');
     }
   };
 
   const handleDraw = useCallback(() => {
+    // In the smart contract, drawing happens automatically when time is up
+    // We just need to show the drawing state and then wait for the contract to process
     setGameState(prev => ({ ...prev, status: GameStatus.DRAWING }));
-    // This would be handled by the smart contract in real implementation
-    setTimeout(async () => {
-      // Mock result for now
-      const result: GameResult = {
-        winningNumber: Math.floor(Math.random() * 25) + 1,
-        winner: undefined,
-        prize: gameState.prizePool,
-      };
-      setGameResult(result);
-      setGameState(prev => ({ ...prev, status: GameStatus.RESULTS }));
-    }, 5000);
-  }, [gameState.prizePool]);
+    
+    // The smart contract will automatically draw and start a new game
+    // The hooks will automatically poll for updates
+    setTimeout(() => {
+      // Check if game is still active or if it has ended and a new one started
+      if (gameStats && !gameStats[1]) { // if not active
+        // Show results briefly before loading new game
+        setGameState(prev => ({ ...prev, status: GameStatus.RESULTS }));
+        setTimeout(() => {
+          setGameState(prev => ({ ...prev, status: GameStatus.LOADING }));
+        }, 3000);
+      }
+    }, 2000);
+  }, [gameStats]);
 
   const handleJoinNewRound = () => {
     setGameState(prev => ({ ...prev, status: GameStatus.LOADING }));
     setGameResult(null);
     setSelectedNumber(null);
-    refetchStats();
+    // The hooks will automatically poll for new game data
   };
 
   const saveFrameButton = useMemo(() => {

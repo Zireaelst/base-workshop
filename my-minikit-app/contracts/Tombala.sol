@@ -66,7 +66,6 @@ contract Tombala is Ownable, ReentrancyGuard {
     error IncorrectBetAmount();
     error GameNotActive();
     error GameStillActive();
-    error NoNumbersToDrawFrom();
     error TransferFailed();
     error PlayerAlreadyBet();
     
@@ -75,10 +74,20 @@ contract Tombala is Ownable, ReentrancyGuard {
     }
     
     /**
+     * @notice Modifier to automatically draw winner if game time has passed
+     */
+    modifier autoDrawCheck() {
+        if (!isGameActive() && currentGameId > 0) {
+            _drawWinner();
+        }
+        _;
+    }
+    
+    /**
      * @notice Place a bet on a specific number
      * @param number The number to bet on (1-25)
      */
-    function placeBet(uint256 number) external payable nonReentrant {
+    function placeBet(uint256 number) external payable nonReentrant autoDrawCheck {
         if (msg.value != BET_PRICE) revert IncorrectBetAmount();
         if (number < MIN_NUMBER || number > MAX_NUMBER) revert InvalidNumber();
         if (numberOwners[number] != address(0)) revert NumberAlreadyTaken();
@@ -96,21 +105,24 @@ contract Tombala is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @notice Draw a winner and end the current game
-     * @dev Can only be called after game duration has passed
+     * @notice Internal function to draw winner and handle payouts
      */
-    function drawWinner() external nonReentrant {
-        if (isGameActive()) revert GameStillActive();
-        if (filledNumbers.length == 0) revert NoNumbersToDrawFrom();
+    function _drawWinner() internal {
+        if (isGameActive()) return; // Safety check
         
-        // Generate pseudo-random number from filled numbers
-        uint256 randomIndex = _generateRandomNumber() % filledNumbers.length;
-        uint256 winningNumber = filledNumbers[randomIndex];
+        // Generate random number between 1-25
+        uint256 winningNumber = (_generateRandomNumber() % MAX_NUMBER) + 1;
         address winner = numberOwners[winningNumber];
         
-        // Calculate prize (90% to winner, 10% stays in contract)
-        uint256 prize = (totalPot * 90) / 100;
-        uint256 houseFee = totalPot - prize;
+        uint256 prize = 0;
+        uint256 houseFee = totalPot;
+        
+        // If someone picked the winning number, they get 90%, house gets 10%
+        if (winner != address(0)) {
+            prize = (totalPot * 90) / 100;
+            houseFee = totalPot - prize;
+        }
+        // If no one picked the winning number, house gets 100%
         
         // Record game result
         gameHistory[currentGameId] = GameResult({
@@ -124,24 +136,31 @@ contract Tombala is Ownable, ReentrancyGuard {
         
         emit GameDrawn(currentGameId, winningNumber, winner, prize, block.timestamp);
         
-        // Transfer prize to winner
-        if (prize > 0) {
+        // Transfer prize to winner if there is one
+        if (prize > 0 && winner != address(0)) {
             (bool success, ) = payable(winner).call{value: prize}("");
             if (!success) revert TransferFailed();
         }
         
-        // Keep house fee in contract for sustainability
-        // Reset for new game (but keep accumulated house fees)
-        totalPot = houseFee;
+        // Transfer house fee to owner
+        if (houseFee > 0) {
+            (bool success, ) = payable(owner()).call{value: houseFee}("");
+            if (!success) revert TransferFailed();
+        }
+        
+        // Reset pot for new game
+        totalPot = 0;
+        
+        // Start new game automatically
+        _startNewGame();
     }
     
     /**
-     * @notice Start a new game
-     * @dev Can only be called after the previous game has ended
+     * @notice Draw a winner and end the current game (public interface)
+     * @dev Can be called by anyone after game duration has passed
      */
-    function startNewGame() external nonReentrant {
-        if (isGameActive()) revert GameStillActive();
-        _startNewGame();
+    function drawWinner() external nonReentrant {
+        _drawWinner();
     }
     
     /**
@@ -151,13 +170,32 @@ contract Tombala is Ownable, ReentrancyGuard {
         currentGameId++;
         gameStartTime = block.timestamp;
         
-        // Clear previous game state
+        // Clear previous game state - numbers
         for (uint i = 0; i < filledNumbers.length; i++) {
             delete numberOwners[filledNumbers[i]];
         }
         
-        // Clear player data
-        // Note: We don't iterate over all addresses, just clear as players interact
+        // Clear previous game state - players
+        for (uint i = 0; i < filledNumbers.length; i++) {
+            address player = numberOwners[filledNumbers[i]];
+            if (player != address(0)) {
+                delete hasPlayerBet[player];
+                delete playerNumbers[player];
+            }
+        }
+        
+        // We need to manually clear player data for all players who bet
+        // This is done by tracking players in the filledNumbers array
+        for (uint i = 1; i <= MAX_NUMBER; i++) {
+            if (numberOwners[i] != address(0)) {
+                address player = numberOwners[i];
+                delete hasPlayerBet[player];
+                delete playerNumbers[player];
+                delete numberOwners[i];
+            }
+        }
+        
+        // Clear filled numbers array
         delete filledNumbers;
         
         emit NewGameStarted(currentGameId, block.timestamp);
@@ -205,7 +243,7 @@ contract Tombala is Ownable, ReentrancyGuard {
      * @return betsCount Number of bets placed
      * @return timeLeft Time remaining in seconds
      */
-    function getGameStats() external view returns (
+    function getGameStats() external autoDrawCheck returns (
         uint256 gameId,
         bool isActive,
         uint256 pot,
@@ -236,16 +274,6 @@ contract Tombala is Ownable, ReentrancyGuard {
     }
     
     /**
-     * @notice Clear player's bet status (called internally when new game starts)
-     * @param player The player address to clear
-     */
-    function clearPlayerBetStatus(address player) external {
-        require(msg.sender == address(this), "Internal function only");
-        delete hasPlayerBet[player];
-        delete playerNumbers[player];
-    }
-    
-    /**
      * @notice Emergency withdraw function (only owner)
      * @dev Should only be used in emergency situations
      */
@@ -258,7 +286,7 @@ contract Tombala is Ownable, ReentrancyGuard {
      * @notice Get contract balance
      * @return uint256 Contract balance
      */
-    function getContractBalance() external view returns (uint256) {
+    function getContractBalance() external autoDrawCheck returns (uint256) {
         return address(this).balance;
     }
 }

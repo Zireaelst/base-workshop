@@ -33,11 +33,6 @@ export const TOMBALA_CONTRACT_CONFIG = {
     },
     {
       "inputs": [],
-      "name": "NoNumbersToDrawFrom",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "NumberAlreadyTaken",
       "type": "error"
     },
@@ -237,19 +232,6 @@ export const TOMBALA_CONTRACT_CONFIG = {
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "player",
-          "type": "address"
-        }
-      ],
-      "name": "clearPlayerBetStatus",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "currentGameId",
       "outputs": [
@@ -274,6 +256,25 @@ export const TOMBALA_CONTRACT_CONFIG = {
       "name": "emergencyWithdraw",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "filledNumbers",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -343,7 +344,7 @@ export const TOMBALA_CONTRACT_CONFIG = {
           "type": "uint256"
         }
       ],
-      "stateMutability": "view",
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -353,7 +354,7 @@ export const TOMBALA_CONTRACT_CONFIG = {
         {
           "internalType": "uint256[]",
           "name": "",
-          "type": "uint256"
+          "type": "uint256[]"
         }
       ],
       "stateMutability": "view",
@@ -389,7 +390,7 @@ export const TOMBALA_CONTRACT_CONFIG = {
           "type": "uint256"
         }
       ],
-      "stateMutability": "view",
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -405,7 +406,7 @@ export const TOMBALA_CONTRACT_CONFIG = {
         {
           "internalType": "uint256[]",
           "name": "",
-          "type": "uint256"
+          "type": "uint256[]"
         }
       ],
       "stateMutability": "view",
@@ -528,13 +529,6 @@ export const TOMBALA_CONTRACT_CONFIG = {
     {
       "inputs": [],
       "name": "renounceOwnership",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "startNewGame",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

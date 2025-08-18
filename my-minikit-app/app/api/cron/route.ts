@@ -64,30 +64,24 @@ export async function GET(request: NextRequest) {
     const filledNumbers = await contract.read.getFilledNumbers() as unknown as bigint[];
     
     if (filledNumbers.length === 0) {
-      // No bets placed, start new game without drawing
-      const hash = await contract.write.startNewGame();
+      // No bets placed, but we still need to draw to reset the game
+      // The smart contract will automatically start a new game after drawing
+      const hash = await contract.write.drawWinner();
       
       return NextResponse.json({
-        message: 'No bets placed, started new game',
+        message: 'No bets placed, drew and started new game',
         transactionHash: hash,
         gameActive: false,
         betsCount: 0
       });
     }
 
-    // Draw winner first
+    // Draw winner - this will automatically start a new game
     const drawHash = await contract.write.drawWinner();
-    
-    // Wait a bit for the transaction to be mined
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    
-    // Start new game
-    const newGameHash = await contract.write.startNewGame();
 
     return NextResponse.json({
       message: 'Successfully drew winner and started new game',
-      drawTransactionHash: drawHash,
-      newGameTransactionHash: newGameHash,
+      transactionHash: drawHash,
       betsCount: filledNumbers.length,
       network: chain.name
     });

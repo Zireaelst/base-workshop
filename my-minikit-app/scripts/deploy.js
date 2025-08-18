@@ -1,5 +1,5 @@
 const { ethers } = require("hardhat");
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: '.env' });
 
 async function main() {
   console.log("Deploying Tombala contract...");
@@ -7,7 +7,7 @@ async function main() {
   // Check if private key exists
   if (!process.env.PRIVATE_KEY) {
     console.error("❌ PRIVATE_KEY not found in environment variables!");
-    console.error("Please check your .env.local file");
+    console.error("Please check your .env file");
     return;
   }
 
