@@ -2,7 +2,9 @@
 
 Welcome to Base Tombala, a modern, decentralized take on the classic Turkish Bingo game, built on the Base blockchain and integrated as a Farcaster Mini App. This project leverages the power of smart contracts to create a fair, transparent, and engaging gaming experience where players can win ETH prizes.
 
-![Base Tombala Screenshot](assets/main-page.png)
+<img src="assets/main-page.png" alt="Base Tombala Screenshot" width="400"/>
+
+**[➡️ Try Base Tombala on Farcaster](https://farcaster.xyz/miniapps/MylHMMurVStS/tombala)**
 
 ## 🚀 Features
 
