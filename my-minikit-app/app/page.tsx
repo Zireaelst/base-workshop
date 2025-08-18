@@ -1,5 +1,6 @@
 "use client";
 
+import { sdk } from "@farcaster/miniapp-sdk";
 import {
   useMiniKit,
   useAddFrame,
@@ -28,8 +29,9 @@ import Toast from './components/Toast';
 import { useTombalaGameStats, useTombalaPlaceBet, useTombalaFilledNumbers } from '@/lib/tombala-hooks';
 
 export default function App() {
-  const { setFrameReady, isFrameReady, context } = useMiniKit();
+  const { context } = useMiniKit();
   const [frameAdded, setFrameAdded] = useState(false);
+  const [appReady, setAppReady] = useState(false);
   
   // Game state management
   const { data: gameStats } = useTombalaGameStats();
@@ -56,10 +58,29 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (!isFrameReady) {
-      setFrameReady();
+    // Initialize MiniApp SDK
+    const initializeMiniApp = async () => {
+      try {
+        console.log('Initializing MiniApp SDK...');
+        
+        // Always call sdk.actions.ready() - it's safe to call in any environment
+        // The SDK will handle whether it's in a MiniApp context or not
+        await sdk.actions.ready();
+        console.log('sdk.actions.ready() completed successfully');
+        
+        setAppReady(true);
+      } catch (error) {
+        console.error('Failed to initialize MiniApp SDK:', error);
+        // Even if ready() fails, set app as ready to prevent infinite loading
+        setAppReady(true);
+      }
+    };
+
+    if (!appReady) {
+      // Add a small delay to ensure DOM is fully loaded
+      setTimeout(initializeMiniApp, 100);
     }
-  }, [setFrameReady, isFrameReady]);
+  }, [appReady]);
 
   // Update game state when blockchain data changes
   useEffect(() => {
@@ -217,69 +238,78 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen font-sans text-[var(--app-foreground)] mini-app-theme from-[var(--app-background)] to-[var(--app-gray)]">
-      <div className="w-full max-w-md mx-auto px-4 py-3">
-        <header className="flex justify-between items-center mb-3 h-11">
-          <div>
-            <div className="flex items-center space-x-2">
-              <Wallet className="z-10">
-                <ConnectWallet>
-                  <Name className="text-inherit" />
-                </ConnectWallet>
-                <WalletDropdown>
-                  <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
-                    <Avatar />
-                    <Name />
-                    <Address />
-                    <EthBalance />
-                  </Identity>
-                  <WalletDropdownDisconnect />
-                </WalletDropdown>
-              </Wallet>
-            </div>
+      {!appReady ? (
+        <div className="flex justify-center items-center h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-sm text-gray-500">Initializing MiniApp...</p>
           </div>
-          <div>{saveFrameButton}</div>
-        </header>
+        </div>
+      ) : (
+        <div className="w-full max-w-md mx-auto px-4 py-3">
+          <header className="flex justify-between items-center mb-3 h-11">
+            <div>
+              <div className="flex items-center space-x-2">
+                <Wallet className="z-10">
+                  <ConnectWallet>
+                    <Name className="text-inherit" />
+                  </ConnectWallet>
+                  <WalletDropdown>
+                    <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
+                      <Avatar />
+                      <Name />
+                      <Address />
+                      <EthBalance />
+                    </Identity>
+                    <WalletDropdownDisconnect />
+                  </WalletDropdown>
+                </Wallet>
+              </div>
+            </div>
+            <div>{saveFrameButton}</div>
+          </header>
 
-        <main className="flex-1">
-          {(() => {
-            switch (gameState.status) {
-              case GameStatus.LOADING:
-                return (
-                  <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-                  </div>
-                );
-              case GameStatus.RESULTS:
-                return <ResultsScreen result={gameResult} onJoinNewRound={handleJoinNewRound} />;
-              case GameStatus.ACTIVE:
-              case GameStatus.DRAWING:
-              default:
-                return (
-                  <GameScreen
-                    gameState={gameState}
-                    selectedNumber={selectedNumber}
-                    isBetting={isBetting}
-                    onSelectNumber={handleSelectNumber}
-                    onPlaceBet={handlePlaceBet}
-                    onDraw={handleDraw}
-                  />
-                );
-            }
-          })()}
-          {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-        </main>
+          <main className="flex-1">
+            {(() => {
+              switch (gameState.status) {
+                case GameStatus.LOADING:
+                  return (
+                    <div className="flex justify-center items-center h-64">
+                      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+                    </div>
+                  );
+                case GameStatus.RESULTS:
+                  return <ResultsScreen result={gameResult} onJoinNewRound={handleJoinNewRound} />;
+                case GameStatus.ACTIVE:
+                case GameStatus.DRAWING:
+                default:
+                  return (
+                    <GameScreen
+                      gameState={gameState}
+                      selectedNumber={selectedNumber}
+                      isBetting={isBetting}
+                      onSelectNumber={handleSelectNumber}
+                      onPlaceBet={handlePlaceBet}
+                      onDraw={handleDraw}
+                    />
+                  );
+              }
+            })()}
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+          </main>
 
-        <footer className="mt-2 pt-4 flex justify-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-[var(--ock-text-foreground-muted)] text-xs"
-            onClick={() => openUrl("https://base.org/builders/minikit")}
-          >
-            Built on Base with MiniKit
-          </Button>
-        </footer>
-      </div>
+          <footer className="mt-2 pt-4 flex justify-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-[var(--ock-text-foreground-muted)] text-xs"
+              onClick={() => openUrl("https://base.org/builders/minikit")}
+            >
+              Built on Base with MiniKit
+            </Button>
+          </footer>
+        </div>
+      )}
     </div>
   );
 }
