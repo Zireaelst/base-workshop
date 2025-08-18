@@ -15,7 +15,7 @@ const nextConfig = {
         headers: [
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN'
+            value: 'ALLOW-FROM https://farcaster.xyz',
           },
           {
             key: 'X-Content-Type-Options',
@@ -24,7 +24,11 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin'
-          }
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'self' https://farcaster.xyz",
+          },
         ]
       },
       {

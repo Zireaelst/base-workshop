@@ -57,30 +57,30 @@ export default function App() {
     setTimeout(() => setToast(null), 3000);
   };
 
+  // Initialize MiniApp SDK and set app ready state.
   useEffect(() => {
-    // Initialize MiniApp SDK
-    const initializeMiniApp = async () => {
-      try {
-        console.log('Initializing MiniApp SDK...');
-        
-        // Always call sdk.actions.ready() - it's safe to call in any environment
-        // The SDK will handle whether it's in a MiniApp context or not
-        await sdk.actions.ready();
-        console.log('sdk.actions.ready() completed successfully');
-        
-        setAppReady(true);
-      } catch (error) {
-        console.error('Failed to initialize MiniApp SDK:', error);
-        // Even if ready() fails, set app as ready to prevent infinite loading
-        setAppReady(true);
+    // We just need to set the app as "ready" from a client-side perspective.
+    // The actual call to sdk.actions.ready() will happen when the UI is rendered.
+    setAppReady(true);
+  }, []);
+
+  // Call ready() when the app interface is fully loaded and ready to display
+  useEffect(() => {
+    const callReady = async () => {
+      // We are ready to show the UI once appReady is true and the game is not in a loading state.
+      if (appReady && gameState.status !== GameStatus.LOADING) {
+        try {
+          console.log('UI is ready, calling sdk.actions.ready()');
+          await sdk.actions.ready();
+          console.log('✅ sdk.actions.ready() completed successfully');
+        } catch (error) {
+          console.error('❌ Failed to call sdk.actions.ready():', error);
+        }
       }
     };
 
-    if (!appReady) {
-      // Add a small delay to ensure DOM is fully loaded
-      setTimeout(initializeMiniApp, 100);
-    }
-  }, [appReady]);
+    callReady();
+  }, [appReady, gameState.status]); // Dependencies ensure this runs when the state is right.
 
   // Update game state when blockchain data changes
   useEffect(() => {

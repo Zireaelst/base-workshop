@@ -40,5 +40,12 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/.well-known/farcaster.json",
+      "destination": "https://api.farcaster.xyz/miniapps/hosted-manifest/0198be46-2b6f-91bf-85b7-99abb05f6d3a",
+      "permanent": false
+    }
   ]
 }
