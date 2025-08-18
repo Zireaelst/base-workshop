@@ -26,6 +26,44 @@ const nextConfig = {
             value: 'strict-origin-when-cross-origin'
           }
         ]
+      },
+      {
+        source: '/manifest.json',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*'
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, OPTIONS'
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type'
+          }
+        ]
+      },
+      {
+        source: '/.well-known/farcaster.json',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*'
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, OPTIONS'
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type'
+          },
+          {
+            key: 'Content-Type',
+            value: 'application/json'
+          }
+        ]
       }
     ];
   }

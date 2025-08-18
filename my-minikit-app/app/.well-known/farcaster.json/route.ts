@@ -17,7 +17,7 @@ export async function GET() {
   // Use the correct domain for the app
   const URL = "https://base-workshop-app.vercel.app";
 
-  return Response.json({
+  const response = Response.json({
     accountAssociation: {
       header: process.env.FARCASTER_HEADER,
       payload: process.env.FARCASTER_PAYLOAD, 
@@ -45,5 +45,25 @@ export async function GET() {
       ogImageUrl: `${URL}/hero.png`,
       requiredChains: ["eip155:8453", "eip155:84532"], // Base mainnet and Base Sepolia
     }),
+  });
+
+  // Add CORS headers
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  response.headers.set('Content-Type', 'application/json');
+
+  return response;
+}
+
+// Handle OPTIONS request for CORS preflight
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
   });
 }
