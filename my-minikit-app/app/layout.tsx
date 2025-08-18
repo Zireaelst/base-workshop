@@ -10,7 +10,7 @@ export const viewport: Viewport = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-  const URL = "https://base-workshop-dluichko1-zireaelsts-projects.vercel.app";
+  const URL = "https://base-workshop-app.vercel.app";
   return {
     title: "Base Tombala - Decentralized Turkish Bingo",
     description: "Win ETH by betting on numbers 1-25 in this decentralized Turkish Bingo game on Base blockchain!",
