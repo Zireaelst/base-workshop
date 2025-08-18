@@ -3,66 +3,36 @@ import { TOMBALA_CONTRACT_CONFIG } from '@/lib/contracts'
 import { useChainId } from 'wagmi'
 import { parseEther } from 'viem'
 
-// Hook to get game statistics (modified to work with 24-hour game duration)
+// Hook to get game statistics using the new getGameStats function
 export function useTombalaGameStats() {
-  const chainId = useChainId();
+  // Force Base Sepolia chain ID where our contract is deployed
+  const chainId = 84532; // Base Sepolia
   const contractAddress = TOMBALA_CONTRACT_CONFIG.address[chainId as keyof typeof TOMBALA_CONTRACT_CONFIG.address] as `0x${string}`;
 
-  const { data: gameId, isLoading: isLoadingGameId } = useReadContract({
+  const { data: gameStats, isLoading } = useReadContract({
     address: contractAddress,
     abi: TOMBALA_CONTRACT_CONFIG.abi,
-    functionName: 'currentGameId',
+    functionName: 'getGameStats',
+    chainId: 84532, // Force Base Sepolia
     query: { refetchInterval: 5000 },
   });
 
-  const { data: isActive, isLoading: isLoadingIsActive } = useReadContract({
-    address: contractAddress,
-    abi: TOMBALA_CONTRACT_CONFIG.abi,
-    functionName: 'isGameActive',
-    query: { refetchInterval: 5000 },
-  });
-
-  const { data: pot, isLoading: isLoadingPot } = useReadContract({
-    address: contractAddress,
-    abi: TOMBALA_CONTRACT_CONFIG.abi,
-    functionName: 'totalPot',
-    query: { refetchInterval: 5000 },
-  });
-
-  const { data: timeLeft, isLoading: isLoadingTimeLeft } = useReadContract({
-    address: contractAddress,
-    abi: TOMBALA_CONTRACT_CONFIG.abi,
-    functionName: 'getRemainingTime',
-    query: { refetchInterval: 5000 },
-  });
-
-  const isLoading = isLoadingGameId || isLoadingIsActive || isLoadingPot || isLoadingTimeLeft;
-
-  const gameStats =
-    gameId !== undefined &&
-    isActive !== undefined &&
-    pot !== undefined &&
-    timeLeft !== undefined
-      ? [
-          gameId,
-          isActive,
-          pot,
-          BigInt(0), // betsCount placeholder - will be calculated from filledNumbers
-          timeLeft,
-        ]
-      : undefined;
-
-  return { data: gameStats as [bigint, boolean, bigint, bigint, bigint] | undefined, isLoading };
+  return { 
+    data: gameStats as [bigint, boolean, bigint, bigint, bigint] | undefined, 
+    isLoading 
+  };
 }
 
 // Hook to get filled numbers
 export function useTombalaFilledNumbers() {
-  const chainId = useChainId()
+  // Force Base Sepolia chain ID
+  const chainId = 84532;
   
   return useReadContract({
     address: TOMBALA_CONTRACT_CONFIG.address[chainId as keyof typeof TOMBALA_CONTRACT_CONFIG.address] as `0x${string}`,
     abi: TOMBALA_CONTRACT_CONFIG.abi,
     functionName: 'getFilledNumbers',
+    chainId: 84532, // Force Base Sepolia
     query: {
       refetchInterval: 3000, // Refetch every 3 seconds
     }

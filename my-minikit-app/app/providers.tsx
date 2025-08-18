@@ -1,12 +1,12 @@
 "use client";
 
 import { type ReactNode } from "react";
-import { base, baseSepolia } from "wagmi/chains";
+import { baseSepolia } from "wagmi/chains";
 import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
 
 export function Providers(props: { children: ReactNode }) {
-  // Use Base Sepolia for development, Base Mainnet for production
-  const chain = process.env.NODE_ENV === 'development' ? baseSepolia : base;
+  // Force Base Sepolia since our contract is deployed there
+  const chain = baseSepolia;
   
   return (
     <MiniKitProvider

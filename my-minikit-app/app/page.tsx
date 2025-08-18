@@ -93,6 +93,12 @@ export default function App() {
       // Fallback when filledNumbers is not available yet
       const [, isActive, pot, , timeLeft] = gameStats;
       
+      console.log('⚠️ Using partial smart contract data:', {
+        isActive,
+        pot: Number(pot) / 1e18,
+        timeLeft: Number(timeLeft)
+      });
+      
       const numbers: NumberCellData[] = [];
       for (let i = 1; i <= 25; i++) {
         numbers.push({

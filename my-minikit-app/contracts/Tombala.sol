@@ -235,15 +235,15 @@ contract Tombala is Ownable, ReentrancyGuard {
         return playerNumbers[player];
     }
     
-    /**
-     * @notice Get game statistics
+        /**
+     * @notice Get current game statistics
      * @return gameId Current game ID
      * @return isActive Whether game is active
      * @return pot Total pot amount
      * @return betsCount Number of bets placed
      * @return timeLeft Time remaining in seconds
      */
-    function getGameStats() external autoDrawCheck returns (
+    function getGameStats() external view returns (
         uint256 gameId,
         bool isActive,
         uint256 pot,
